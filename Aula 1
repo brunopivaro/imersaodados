@@ -1,0 +1,41 @@
+import pandas as pd
+dados = pd.read_csv("https://gist.githubusercontent.com/tgcsantos/3bdb29eba6ce391e90df2b72205ba891/raw/22fa920e80c9fa209a9fccc8b52d74cc95d1599b/dados_imoveis.csv")
+
+dados.head() #mostra as 5 primeiras linhas do DF, podemos alterar a quantidade de linhas
+dados.sample() #seleciona e mostra uma linha aleatória do DF, podemos alterar quantas linhas queremos
+dados.info() #demonstra as características do DataFrame
+
+dados["Metragem"].mean() #média das metragens
+
+filtro = (dados["Bairro"] == "Vila Mariana") #fazendo um filtro apenas com o bairro = Vila Mariana
+vila_mariana = dados[filtro] #apresentando o DF com o filtro
+vila_mariana["Metragem"].mean() #média da metragem do DF com filtro de bairro da Vila Mariana
+
+bairros = dados.Bairro.value_counts() #faz a contagem de quantos vezes o mesmo bairro aparece
+bairros.head(10).plot.bar() #gráfico de barras da quantidade de bairros
+
+#Desafio 1 - Realizar a média da metragem para cada um dos bairros
+
+bairros = dados.groupby("Bairro") #agrupa os dados de acordo com os bairros
+media_metragem_bairros = bairros["Metragem"].mean() #média da metragem de cada bairro
+media_metragem_bairros
+
+#Desafio 2 - Duas formas de selecionar os dados por bairro (consultar os métodos na documentação do Pandas)
+
+dados.query("Bairro == 'Vila Mariana'") #o query filtra com base em uma condição, vale ressaltar que ser for um texto é necessário diferenciar a condição e o que é desejável por aspas simples e duplas
+
+#Desafio 3 - Explorar alguns gráficos na documentação e aplicar nas demais colunas do DF, assim como tentar colocar alguma conclusão
+
+ipiranga = dados.query("Bairro == 'Ipiranga'") #filtrando pelo bairro desejável
+ipiranga.head(5).plot.bar(x = "Rua") #gráfico que pelo nome da rua, mostra relação de metragem, quartos, banheiros e vagas
+
+#Desafio 4 - Pegar outras estatísticas dos dados (como média, mediana, mim, max)
+sao_mateus = dados.query("Bairro == 'Cidade São Mateus'") #filtrando o bairro
+sao_mateus.Banheiros.mean() #média de banheiros em São Mateus
+sao_mateus.Quartos.max() #quantidade máxima de quartos em um imóvel em São Mateus
+sao_mateus.Quartos.min() #quantidade mínima de quartos em um imóvel em São Mateus
+
+#Desafio 5 - Descobrir quais são os bairros que não tem nome de rua
+nulo = dados.Rua.isnull() #indentificando as ruas com valores nulos
+bairros_nulos = dados["Bairro"][nulo].value_counts() #indentificando os bairros que possuem as ruas com valor nulo e fazendo uma contagem
+pd.DataFrame(bairros_nulos)
